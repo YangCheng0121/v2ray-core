@@ -19,6 +19,8 @@ echo "编译 arm64 架构..."
 export GOOS=darwin
 export GOARCH=arm64
 export CGO_ENABLED=1
+export CC=$(xcrun --sdk iphoneos --find clang)
+export CXX=$(xcrun --sdk iphoneos --find clang++)
 go build -buildmode=c-archive -o $OUTPUT_PATH/arm64.a main/main.go
 if [ $? -ne 0 ]; then
     echo "arm64 编译失败"
@@ -28,6 +30,8 @@ fi
 # 编译 x86_64 架构 (iOS 模拟器)
 echo "编译 x86_64 架构..."
 export GOARCH=amd64  # x86_64 对应的 GOARCH 是 amd64
+export CC=$(xcrun --sdk iphonesimulator --find clang)
+export CXX=$(xcrun --sdk iphonesimulator --find clang++)
 go build -buildmode=c-archive -o $OUTPUT_PATH/x86_64.a main/main.go
 if [ $? -ne 0 ]; then
     echo "x86_64 编译失败"
