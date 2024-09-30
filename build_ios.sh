@@ -3,6 +3,7 @@
 # 设置输出路径
 OUTPUT_PATH="./build/ios"
 LIB_NAME="libv2ray.a"
+HEADER_NAME="libv2ray.h"
 
 # 创建输出目录
 mkdir -p $OUTPUT_PATH
@@ -46,7 +47,16 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
+# 将生成的任一 .h 文件复制到输出目录 (只需生成一次 .h 文件)
+if [ -f "$OUTPUT_PATH/main.h" ]; then
+    mv "$OUTPUT_PATH/main.h" "$OUTPUT_PATH/$HEADER_NAME"
+    echo ".h 文件已生成，路径为: $OUTPUT_PATH/$HEADER_NAME"
+else
+    echo ".h 文件未找到，编译可能失败"
+    exit 1
+fi
+
 # 清理单独架构的文件
 rm $OUTPUT_PATH/arm64.a $OUTPUT_PATH/x86_64.a
 
-echo "编译完成，输出文件为: $OUTPUT_PATH/$LIB_NAME"
+echo "编译完成，输出文件为: $OUTPUT_PATH/$LIB_NAME 和 $OUTPUT_PATH/$HEADER_NAME"
