@@ -28,3 +28,5 @@ errorgen
 *.dat
 *~
 [._]*.un~
+/build
+/V2ray.xcframework

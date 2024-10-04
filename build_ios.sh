@@ -20,6 +20,7 @@ echo "编译 arm64 架构..."
 export GOOS=darwin
 export GOARCH=arm64
 export CGO_ENABLED=1
+export SDKROOT=$(xcrun --sdk iphoneos --show-sdk-path)  # 设置 SDKROOT
 export CC=$(xcrun --sdk iphoneos --find clang)
 export CXX=$(xcrun --sdk iphoneos --find clang++)
 go build -buildmode=c-archive -o $OUTPUT_PATH/arm64.a main/main.go
@@ -31,6 +32,7 @@ fi
 # 编译 x86_64 架构 (iOS 模拟器)
 echo "编译 x86_64 架构..."
 export GOARCH=amd64  # x86_64 对应的 GOARCH 是 amd64
+export SDKROOT=$(xcrun --sdk iphonesimulator --show-sdk-path)  # 设置 SDKROOT
 export CC=$(xcrun --sdk iphonesimulator --find clang)
 export CXX=$(xcrun --sdk iphonesimulator --find clang++)
 go build -buildmode=c-archive -o $OUTPUT_PATH/x86_64.a main/main.go
@@ -47,9 +49,12 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-# 将生成的任一 .h 文件复制到输出目录 (只需生成一次 .h 文件)
-if [ -f "$OUTPUT_PATH/main.h" ]; then
-    mv "$OUTPUT_PATH/main.h" "$OUTPUT_PATH/$HEADER_NAME"
+# 选择一个已生成的 .h 文件作为最终的头文件 (通常 arm64 的 .h 文件)
+if [ -f "$OUTPUT_PATH/arm64.h" ]; then
+    mv "$OUTPUT_PATH/arm64.h" "$OUTPUT_PATH/$HEADER_NAME"
+    echo ".h 文件已生成，路径为: $OUTPUT_PATH/$HEADER_NAME"
+elif [ -f "$OUTPUT_PATH/x86_64.h" ]; then
+    mv "$OUTPUT_PATH/x86_64.h" "$OUTPUT_PATH/$HEADER_NAME"
     echo ".h 文件已生成，路径为: $OUTPUT_PATH/$HEADER_NAME"
 else
     echo ".h 文件未找到，编译可能失败"
